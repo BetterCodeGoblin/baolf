@@ -5,6 +5,7 @@ public class BabyProjectile : MonoBehaviour
 {
     [SerializeField] private float settleVelocityThreshold = 0.35f;
     [SerializeField] private float settleTimeRequired = 1f;
+    [SerializeField] private float outOfBoundsY = -10f;
 
     private Rigidbody rb;
     private BaolfGameManager gameManager;
@@ -12,6 +13,7 @@ public class BabyProjectile : MonoBehaviour
     private bool launched;
     private bool settledReported;
     private bool scored;
+    private bool outOfBoundsReported;
 
     public Rigidbody Rigidbody => rb;
     public bool HasLaunched => launched;
@@ -32,15 +34,24 @@ public class BabyProjectile : MonoBehaviour
         launched = true;
         settledReported = false;
         scored = false;
+        outOfBoundsReported = false;
         settleTimer = 0f;
         rb.isKinematic = false;
         rb.linearVelocity = velocity;
+        rb.angularVelocity = Vector3.zero;
     }
 
     private void Update()
     {
-        if (!launched || settledReported || scored)
+        if (!launched || settledReported || scored || outOfBoundsReported)
             return;
+
+        if (transform.position.y <= outOfBoundsY)
+        {
+            outOfBoundsReported = true;
+            gameManager?.NotifyOutOfBounds(this);
+            return;
+        }
 
         if (rb.linearVelocity.magnitude <= settleVelocityThreshold)
         {

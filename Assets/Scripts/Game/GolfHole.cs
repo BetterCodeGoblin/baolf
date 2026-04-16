@@ -3,6 +3,10 @@ using UnityEngine;
 [RequireComponent(typeof(Collider))]
 public class GolfHole : MonoBehaviour
 {
+    [SerializeField] private int par = 3;
+
+    public int Par => par;
+
     private void Reset()
     {
         Collider colliderRef = GetComponent<Collider>();
